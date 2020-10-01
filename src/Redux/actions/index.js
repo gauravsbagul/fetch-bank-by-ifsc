@@ -1,0 +1,1 @@
+export { fetchBankByIFSC } from './bank';
