@@ -19,11 +19,11 @@ export const Details = ({ bankDetailsByIfsc }) => {
       <DetailsRow title={'ADDRESS'} detail={ADDRESS} />
       <DetailsRow title={'BANK'} detail={BANK} />
       <DetailsRow title={'BANKCODE'} detail={BANKCODE} />
+      <DetailsRow title={'IFSC'} detail={IFSC} />
       <DetailsRow title={'BRANCH'} detail={BRANCH} />
       <DetailsRow title={'CENTRE'} detail={CENTRE} />
       <DetailsRow title={'CITY'} detail={CITY} />
       <DetailsRow title={'CONTACT'} detail={CONTACT} />
-      <DetailsRow title={'IFSC'} detail={IFSC} />
       <DetailsRow title={'MICR'} detail={MICR} />
       <DetailsRow title={'MICR CODE'} detail={bankDetailsByIfsc['MICR CODE']} />
     </>

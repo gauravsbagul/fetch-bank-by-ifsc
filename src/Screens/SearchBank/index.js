@@ -1,18 +1,13 @@
 /* eslint-disable react-native/no-inline-styles */
-import {
-  Container,
-  Input,
-  Content,
-  Button,
-  Text,
-  View,
-  Row,
-} from 'native-base';
+import { Button, Container, Content, Input, Text } from 'native-base';
 import React, { Component } from 'react';
-import { StyleSheet, ActivityIndicator } from 'react-native';
+import { ActivityIndicator, StyleSheet } from 'react-native';
 import { connect } from 'react-redux';
-import { fetchBankByIFSC } from '../../Redux/actions';
-
+import {
+  addToFavourite,
+  fetchBankByIFSC,
+  resetbankDetailsProps,
+} from '../../Redux/actions';
 import { Details } from './Details';
 import { Error } from './Error';
 
@@ -22,6 +17,7 @@ const initialSatte = {
   errorMessage: '',
   bankDetailsByIfsc: null,
   isLoading: false,
+  markedAsFavourite: false,
 };
 
 class SearchBank extends Component {
@@ -31,11 +27,6 @@ class SearchBank extends Component {
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    console.log(
-      'SearchBank -> getDerivedStateFromProps -> nextProps',
-      nextProps,
-    );
-
     var newState = prevState;
     if (nextProps.navigation.isFocused()) {
       if (nextProps.bankDetails?.response) {
@@ -44,33 +35,52 @@ class SearchBank extends Component {
           newState.errorMessage = nextProps.bankDetails?.response;
           newState.bankDetailsByIfsc = null;
           newState.isLoading = false;
+          newState.markedAsFavourite = false;
         } else if (!nextProps.bankDetails?.error) {
+          if (
+            nextProps.bankDetails?.IFSC !== newState.bankDetailsByIfsc?.IFSC
+          ) {
+            newState.isLoading = false;
+          }
+
           newState.isError = false;
           newState.errorMessage = '';
-          newState.isLoading = false;
+
           newState.bankDetailsByIfsc = nextProps.bankDetails?.response;
+          newState.markedAsFavourite = false;
         }
       }
     }
     return newState === prevState ? null : newState;
   }
 
-  onSearch = () => {
+  _onSearch = () => {
     const { searchQuery } = this.state;
     if (searchQuery.trim()) {
-      this.setState({ isLoading: true, ...initialSatte });
+      this.setState({ ...initialSatte, isLoading: true });
       this.props.fetchBankByIFSC(searchQuery);
     }
   };
 
-  onReset = () => {
+  _onReset = () => {
+    this.props.resetbankDetailsProps();
     this.setState({
       ...initialSatte,
     });
   };
 
+  _addToFavourite = () => {
+    this.props.addToFavourite(this.state.bankDetailsByIfsc);
+  };
+
   render() {
-    const { bankDetailsByIfsc, isError, errorMessage, isLoading } = this.state;
+    const {
+      bankDetailsByIfsc,
+      isError,
+      errorMessage,
+      isLoading,
+      markedAsFavourite,
+    } = this.state;
 
     return (
       <>
@@ -88,7 +98,7 @@ class SearchBank extends Component {
             <Button
               rounded
               style={styles.button}
-              onPress={() => this.onSearch()}>
+              onPress={() => this._onSearch()}>
               {isLoading ? (
                 <ActivityIndicator color={'#000'} />
               ) : (
@@ -96,10 +106,21 @@ class SearchBank extends Component {
               )}
             </Button>
             {isError ? (
-              <Error onReset={this.onReset} errorMessage={errorMessage} />
-            ) : (
-              <Details bankDetailsByIfsc={bankDetailsByIfsc} />
-            )}
+              <Error onReset={this._onReset} errorMessage={errorMessage} />
+            ) : bankDetailsByIfsc ? (
+              <>
+                <Details bankDetailsByIfsc={bankDetailsByIfsc} />
+                <Button
+                  rounded
+                  style={styles.button}
+                  disabled={markedAsFavourite}
+                  onPress={() => this._addToFavourite()}>
+                  <Text>
+                    {markedAsFavourite ? 'Favourite' : 'Add to Favourite'}
+                  </Text>
+                </Button>
+              </>
+            ) : null}
           </Content>
         </Container>
       </>
@@ -107,14 +128,17 @@ class SearchBank extends Component {
   }
 }
 const mapStateToProps = ({ bank }) => {
-  const { bankDetails } = bank;
+  const { bankDetails, favouriteBanks } = bank;
   return {
     bankDetails,
+    favouriteBanks,
   };
 };
 
 const mapDispatchToProps = {
   fetchBankByIFSC,
+  addToFavourite,
+  resetbankDetailsProps,
 };
 export default connect(mapStateToProps, mapDispatchToProps)(SearchBank);
 
