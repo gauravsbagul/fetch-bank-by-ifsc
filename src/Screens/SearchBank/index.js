@@ -1,7 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 import { Button, Container, Content, Input, Text } from 'native-base';
 import React, { Component } from 'react';
-import { ActivityIndicator, StyleSheet } from 'react-native';
+import { ActivityIndicator, StyleSheet, StatusBar } from 'react-native';
 import { connect } from 'react-redux';
 import {
   addToFavourite,
@@ -10,7 +10,7 @@ import {
 } from '../../Redux/actions';
 import { Details } from './Details';
 import { Error } from './Error';
-
+import { isIos } from '../../Helpers';
 const initialSatte = {
   searchQuery: '',
   isError: false,
@@ -106,7 +106,11 @@ class SearchBank extends Component {
               )}
             </Button>
             {isError ? (
-              <Error onReset={this._onReset} errorMessage={errorMessage} />
+              <Error
+                onReset={this._onReset}
+                errorMessage={errorMessage}
+                buttonText={'Reset'}
+              />
             ) : bankDetailsByIfsc ? (
               <>
                 <Details bankDetailsByIfsc={bankDetailsByIfsc} />
@@ -148,6 +152,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   input: {
+    marginTop: isIos(20, StatusBar.currentHeight + 10),
     width: '100%',
     backgroundColor: '#eee',
     borderRadius: 25,
@@ -160,3 +165,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+//ADCB0000001
+//HDFC0000039
+//HDFC0009077
+//CBIN0281400

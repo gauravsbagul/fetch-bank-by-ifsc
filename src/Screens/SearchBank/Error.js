@@ -1,14 +1,14 @@
 /* eslint-disable react/react-in-jsx-scope */
-import { Text, View, Button } from 'native-base';
-import { StyleSheet } from 'react-native';
+import { Button, Text, View } from 'native-base';
 import React from 'react';
+import { StyleSheet } from 'react-native';
 
-export const Error = ({ onReset, errorMessage }) => {
+export const Error = ({ onReset, errorMessage, buttonText }) => {
   return (
     <View style={styles.erorWrapper}>
       <Text style={styles.errorMessage}>{errorMessage}</Text>
       <Button rounded style={styles.button} onPress={() => onReset()}>
-        <Text>Reset</Text>
+        <Text>{buttonText}</Text>
       </Button>
     </View>
   );
